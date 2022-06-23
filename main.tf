@@ -120,7 +120,8 @@ resource "aws_spot_instance_request" "multiarch_builder_amd64" {
   iam_instance_profile = var.iam_instance_profile
 
   tags = {
-    Name = "${var.prefix_name}-amd64"
+    Name            = "${var.prefix_name}-amd64"
+    TerraformModule = "multiarch-builder"
   }
 }
 
@@ -147,7 +148,8 @@ resource "aws_spot_instance_request" "multiarch_builder_arm64" {
   iam_instance_profile = var.iam_instance_profile
 
   tags = {
-    Name = "${var.prefix_name}-arm64"
+    Name            = "${var.prefix_name}-arm64"
+    TerraformModule = "multiarch-builder"
   }
 }
 
