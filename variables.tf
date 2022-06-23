@@ -9,38 +9,38 @@ variable "instance_type_arm64" {
 }
 
 variable "volume_root_size" {
-  description = "The builder instances root volume size"
+  description = "The multiarch builder instances root volume size"
   default     = 15
 }
 
 variable "az" {
-  description = "The builder instances availability zone"
+  description = "The multiarch builder instances availability zone"
   default     = null
 }
 
 variable "prefix_name" {
-  description = "The builder instances prefix name"
-  default     = "builder"
+  description = "The multiarch builder instances prefix name"
+  default     = "multiarch-builder"
 }
 
 variable "security_group_ids" {
-  description = "The builder instances security group ids list"
+  description = "The multiarch builder instances security group ids list"
   type        = list(string)
   default     = []
 }
 
 variable "subnet_id" {
-  description = "The builder instances (public) subnet id"
+  description = "The multiarch builder instances (public) subnet id"
   default     = null
 }
 
 variable "key_name" {
-  description = "The builder instances ssh key name"
+  description = "The multiarch builder instances ssh key name"
   default     = null
 }
 
 variable "iam_instance_profile" {
-  description = "The builder instances iam instance profile"
+  description = "The multiarch builder instances iam instance profile"
   default     = null
 }
 

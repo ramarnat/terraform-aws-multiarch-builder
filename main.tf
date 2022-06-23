@@ -1,4 +1,4 @@
-data "template_cloudinit_config" "builder" {
+data "template_cloudinit_config" "multiarch_builder" {
   gzip          = true
   base64_encode = true
 
@@ -97,14 +97,14 @@ data "aws_ami" "amazon_linux_arm64" {
   }
 }
 
-resource "aws_spot_instance_request" "builder_amd64" {
+resource "aws_spot_instance_request" "multiarch_builder_amd64" {
   ami                         = data.aws_ami.amazon_linux_amd64.id
   instance_type               = var.instance_type_amd64
   availability_zone           = var.az
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = var.security_group_ids
   key_name                    = var.key_name
-  user_data_base64            = data.template_cloudinit_config.builder.rendered
+  user_data_base64            = data.template_cloudinit_config.multiarch_builder.rendered
   user_data_replace_on_change = true
   wait_for_fulfillment        = true
   associate_public_ip_address = true
@@ -124,14 +124,14 @@ resource "aws_spot_instance_request" "builder_amd64" {
   }
 }
 
-resource "aws_spot_instance_request" "builder_arm64" {
+resource "aws_spot_instance_request" "multiarch_builder_arm64" {
   ami                         = data.aws_ami.amazon_linux_arm64.id
   instance_type               = var.instance_type_arm64
   availability_zone           = var.az
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = var.security_group_ids
   key_name                    = var.key_name
-  user_data_base64            = data.template_cloudinit_config.builder.rendered
+  user_data_base64            = data.template_cloudinit_config.multiarch_builder.rendered
   user_data_replace_on_change = true
   wait_for_fulfillment        = true
   associate_public_ip_address = true
@@ -163,10 +163,10 @@ resource "null_resource" "client_config" {
   provisioner "local-exec" {
     command     = <<-EOT
     docker context use default || echo "ignoring error..."; \
-    docker context rm builder_amd64 || echo "ignoring error..."; \
-    docker context rm builder_arm64 || echo "ignoring error..."; \
+    docker context rm multiarch-builder-amd64 || echo "ignoring error..."; \
+    docker context rm multiarch-builder-arm64 || echo "ignoring error..."; \
     docker buildx use default || echo "ignoring error..."; \
-    docker buildx rm container_builder || echo "ignoring error..."
+    docker buildx rm multiarch-builder || echo "ignoring error..."
     EOT
     interpreter = ["/bin/bash", "-c"]
     when        = destroy
