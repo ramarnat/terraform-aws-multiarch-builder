@@ -19,9 +19,9 @@ locals {
       builder_arm64
     ## use context and wait for initial startup
     docker context use builder_arm64
-    timeout 60 bash -c "until docker info &>/dev/null; do sleep 1; echo 'waiting for builder_arm64 connection...'; done" || { echo "timeout waiting for remote"; exit 1; }
+    timeout 120 bash -c "until docker info &>/dev/null; do sleep 1; echo 'waiting for builder_arm64 connection...'; done" || { echo "timeout waiting for remote"; exit 1; }
     docker context use builder_amd64
-    timeout 60 bash -c "until docker info &>/dev/null; do sleep 1; echo 'waiting for builder_amd64 connection...'; done" || { echo "timeout waiting for remote"; exit 1; }
+    timeout 120 bash -c "until docker info &>/dev/null; do sleep 1; echo 'waiting for builder_amd64 connection...'; done" || { echo "timeout waiting for remote"; exit 1; }
     ## set buildx builder instances
     docker context use builder_amd64
     docker buildx create --use --name container_builder \
