@@ -159,4 +159,16 @@ resource "null_resource" "client_config" {
     interpreter = ["/bin/bash", "-c"]
     when        = create
   }
+
+  provisioner "local-exec" {
+    command     = <<-EOT
+    docker context use default || echo "ignoring error..."; \
+    docker context rm builder_amd64 || echo "ignoring error..."; \
+    docker context rm builder_arm64 || echo "ignoring error..."; \
+    docker buildx use default || echo "ignoring error..."; \
+    docker buildx rm container_builder || echo "ignoring error..."
+    EOT
+    interpreter = ["/bin/bash", "-c"]
+    when        = destroy
+  }
 }
