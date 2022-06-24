@@ -1,5 +1,6 @@
 locals {
   client_config_cmd = <<-EOT
+    set -eu
     # cleanup first
     echo "about to clean up client config..."
     docker context use default || echo "ignoring error..."
