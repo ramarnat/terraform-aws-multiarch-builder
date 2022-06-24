@@ -22,20 +22,28 @@ locals {
     unset DOCKER_HOST
     export DOCKER_TLS_VERIFY=1
     export DOCKER_CERT_PATH='${pathexpand(var.docker_cert_path)}'
+    echo "about to set up docker context 'multiarch-builder-arm64'..."
     docker context use multiarch-builder-arm64
     timeout 120 bash -c "until docker info &>/dev/null; do sleep 1; echo 'waiting for multiarch-builder-arm64 connection...'; done" || { echo "timeout waiting for remote"; exit 1; }
+    echo "about to set up docker context 'multiarch-builder-amd64'..."
     docker context use multiarch-builder-amd64
     timeout 120 bash -c "until docker info &>/dev/null; do sleep 1; echo 'waiting for multiarch-builder-amd64 connection...'; done" || { echo "timeout waiting for remote"; exit 1; }
     ## set buildx builder instances
+    echo "about to set up buildx instance 'multiarch-builder'..."
+    echo "about to set up buildx node 'multiarch-builder-amd64'..."
     docker buildx create --use --name multiarch-builder \
       --driver docker-container \
       --platform linux/amd64 \
       --node=multiarch-builder-amd64 \
       multiarch-builder-amd64
+    echo "about to set up buildx node 'multiarch-builder-arm64'..."
     docker buildx create --append --name multiarch-builder \
       --driver docker-container \
       --platform linux/arm64 \
       --node=multiarch-builder-arm64 \
       multiarch-builder-arm64
+    ## force init multiarch-builder instances
+    echo "force init 'multiarch-builder' instance..."
+    echo "FROM scratch" | docker buildx build --platform="linux/amd64" --platform="linux/arm64" . -f -
   EOT
 }
