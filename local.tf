@@ -10,11 +10,11 @@ locals {
     # config
     echo "about to set up client config..."
     docker context create \
-      --docker "host=tcp://${aws_spot_instance_request.multiarch_builder_amd64.public_dns}:2376,ca='${pathexpand(var.docker_cert_path)}/ca.pem',cert='${pathexpand(var.docker_cert_path)}/cert.pem',key='${pathexpand(var.docker_cert_path)}/key.pem'" \
+      --docker host=tcp://${aws_spot_instance_request.multiarch_builder_amd64.public_dns}:2376,ca="${pathexpand(var.docker_cert_path)}/ca.pem",cert="${pathexpand(var.docker_cert_path)}/cert.pem",key="${pathexpand(var.docker_cert_path)}/key.pem" \
       --description "Remote amd64 builder for multiarch-builder instance" \
       multiarch-builder-amd64
     docker context create \
-      --docker "host=tcp://${aws_spot_instance_request.multiarch_builder_arm64.public_dns}:2376,ca='${pathexpand(var.docker_cert_path)}/ca.pem',cert='${pathexpand(var.docker_cert_path)}/cert.pem',key='${pathexpand(var.docker_cert_path)}/key.pem'" \
+      --docker host=tcp://${aws_spot_instance_request.multiarch_builder_arm64.public_dns}:2376,ca="${pathexpand(var.docker_cert_path)}/ca.pem",cert="${pathexpand(var.docker_cert_path)}/cert.pem",key="${pathexpand(var.docker_cert_path)}/key.pem" \
       --description "Remote arm64 builder for multiarch-builder instance" \
       multiarch-builder-arm64
     ## use context and wait for initial startup
