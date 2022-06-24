@@ -10,14 +10,17 @@ locals {
     # config
     echo "about to set up client config..."
     docker context create \
-      --docker "host=tcp://${aws_spot_instance_request.multiarch_builder_amd64.public_dns}:2376,ca=${pathexpand("~/.docker/ca.pem")},cert=${pathexpand("~/.docker/cert.pem")},key=${pathexpand("~/.docker/key.pem")}" \
+      --docker "host=tcp://${aws_spot_instance_request.multiarch_builder_amd64.public_dns}:2376,ca='${pathexpand(var.docker_cert_path)}/ca.pem',cert='${pathexpand(var.docker_cert_path)}/cert.pem',key='${pathexpand(var.docker_cert_path)}/key.pem'" \
       --description "Remote amd64 builder for multiarch-builder instance" \
       multiarch-builder-amd64
     docker context create \
-      --docker "host=tcp://${aws_spot_instance_request.multiarch_builder_arm64.public_dns}:2376,ca=${pathexpand("~/.docker/ca.pem")},cert=${pathexpand("~/.docker/cert.pem")},key=${pathexpand("~/.docker/key.pem")}" \
+      --docker "host=tcp://${aws_spot_instance_request.multiarch_builder_arm64.public_dns}:2376,ca='${pathexpand(var.docker_cert_path)}/ca.pem',cert='${pathexpand(var.docker_cert_path)}/cert.pem',key='${pathexpand(var.docker_cert_path)}/key.pem'" \
       --description "Remote arm64 builder for multiarch-builder instance" \
       multiarch-builder-arm64
     ## use context and wait for initial startup
+    unset DOCKER_HOST
+    export DOCKER_TLS_VERIFY=1
+    export DOCKER_CERT_PATH='${pathexpand(var.docker_cert_path)}'
     docker context use multiarch-builder-amd64
     timeout 120 bash -c "until docker info &>/dev/null; do sleep 1; echo 'waiting for multiarch-builder-amd64 connection...'; done" || { echo "timeout waiting for remote"; exit 1; }
     docker context use multiarch-builder-arm64
