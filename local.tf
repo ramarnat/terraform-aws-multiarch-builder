@@ -44,6 +44,8 @@ locals {
       multiarch-builder-arm64
     ## force init multiarch-builder instances
     echo "force init 'multiarch-builder' instance..."
-    echo "FROM scratch" | docker buildx build --platform="linux/amd64" --platform="linux/arm64" . -f -
+    echo -e "FROM scratch\nCOPY Dockerfile.init-multiarch-builder Dockerfile.init-multiarch-builder" > Dockerfile.init-multiarch-builder
+    docker buildx build --platform="linux/amd64" --platform="linux/arm64" . -f Dockerfile.init-multiarch-builder
+    rm Dockerfile.init-multiarch-builder
   EOT
 }
