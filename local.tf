@@ -13,7 +13,6 @@ locals {
     %{endif~}
     docker buildx use default || echo "ignoring error..."
     docker buildx create --leave --name multiarch-builder --node multiarch-builder-amd64 || echo "ignoring error..."
-    docker buildx rm --all-inactive -f || echo "ignoring error..."
     # config
     echo "about to set up client config for amd64 instance..."
     docker context create \
@@ -53,7 +52,6 @@ locals {
     %{endif~}
     docker buildx use default || echo "ignoring error..."
     docker buildx create --leave --name multiarch-builder --node multiarch-builder-arm64 || echo "ignoring error..."
-    docker buildx rm --all-inactive -f || echo "ignoring error..."
     # config
     echo "about to set up client config for arm64 instance..."
     docker context create \
