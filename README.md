@@ -1,4 +1,4 @@
-Terraform module for building multi-architecture container images (amd64 and arm64) using remote (TLS) ephemeral EC2 instances as builders. Two AWS Spot instances are launched (one for each architecture). They both run docker (moby) in TLS mode. The module generates the remote builders and client certificates to connect and authenticate between them. The module optionally installs the certificates and applies the respective [buildx](https://github.com/docker/buildx) configuration in the client (see `create_client_certs` and `handle_client_config` input variables).
+Terraform module for building multi-architecture container images (amd64 and arm64) using remote (TLS) ephemeral EC2 instances as builders. Two AWS Spot instances are launched (one for each architecture). They both run docker (moby) in TLS mode. The module generates the remote builders and client certificates to connect and authenticate between them. The module installs the certificates and applies the respective [buildx](https://github.com/docker/buildx) configuration in the client (see `create_client_certs` and `handle_client_config` input variables).
 
 The builders are intended for ephemeral use cases, during pipelines, for instance. Therefore, [caching](https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md#cache-from) usage is also recommended.
 
@@ -38,6 +38,7 @@ No modules.
 | [local_sensitive_file.ca_cert](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
 | [local_sensitive_file.client_cert](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
 | [local_sensitive_file.client_key](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
+| [null_resource.client_config](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [null_resource.client_config_amd64](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [null_resource.client_config_arm64](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [tls_cert_request.client](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/cert_request) | resource |
@@ -59,9 +60,9 @@ No modules.
 | <a name="input_az"></a> [az](#input\_az) | The multiarch builder instances availability zone | `any` | `null` | no |
 | <a name="input_create_amd64"></a> [create\_amd64](#input\_create\_amd64) | Whether to create amd64 builder instance | `bool` | `true` | no |
 | <a name="input_create_arm64"></a> [create\_arm64](#input\_create\_arm64) | Whether to create arm64 builder instance | `bool` | `true` | no |
-| <a name="input_create_client_certs"></a> [create\_client\_certs](#input\_create\_client\_certs) | Whether client certificate files are created | `bool` | `false` | no |
-| <a name="input_docker_cert_path"></a> [docker\_cert\_path](#input\_docker\_cert\_path) | Location for storing generated client docker certificates | `string` | `"~/.docker"` | no |
-| <a name="input_handle_client_config"></a> [handle\_client\_config](#input\_handle\_client\_config) | Whether client buildx config is created and removed | `bool` | `false` | no |
+| <a name="input_create_client_certs"></a> [create\_client\_certs](#input\_create\_client\_certs) | Whether client certificate files are stored on the disk | `bool` | `true` | no |
+| <a name="input_docker_cert_path"></a> [docker\_cert\_path](#input\_docker\_cert\_path) | Location for storing generated client docker certificates | `string` | `"~/.docker/multiarch-builder/certs"` | no |
+| <a name="input_handle_client_config"></a> [handle\_client\_config](#input\_handle\_client\_config) | Whether client buildx config is created or removed (when destroyed) | `bool` | `true` | no |
 | <a name="input_iam_instance_profile"></a> [iam\_instance\_profile](#input\_iam\_instance\_profile) | The multiarch builder instances iam instance profile | `any` | `null` | no |
 | <a name="input_instance_type_amd64"></a> [instance\_type\_amd64](#input\_instance\_type\_amd64) | The amd64 builder instance type | `string` | `"t3.medium"` | no |
 | <a name="input_instance_type_arm64"></a> [instance\_type\_arm64](#input\_instance\_type\_arm64) | The arm64 builder instance type | `string` | `"t4g.medium"` | no |

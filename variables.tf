@@ -61,15 +61,15 @@ variable "tls_validity_period_hours" {
 
 variable "docker_cert_path" {
   description = "Location for storing generated client docker certificates"
-  default     = "~/.docker"
+  default     = "~/.docker/multiarch-builder/certs"
 }
 
 variable "create_client_certs" {
-  description = "Whether client certificate files are created"
-  default     = false
+  description = "Whether client certificate files are stored on the disk"
+  default     = true
 }
 
 variable "handle_client_config" {
-  description = "Whether client buildx config is created and removed"
-  default     = false
+  description = "Whether client buildx config is created or removed (when destroyed)"
+  default     = true
 }
