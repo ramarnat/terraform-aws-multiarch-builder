@@ -19,11 +19,11 @@ The following are the dependencies to make use of the remote ephemeral builders,
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 4.0 |
-| <a name="provider_local"></a> [local](#provider\_local) | n/a |
-| <a name="provider_null"></a> [null](#provider\_null) | n/a |
-| <a name="provider_template"></a> [template](#provider\_template) | n/a |
-| <a name="provider_tls"></a> [tls](#provider\_tls) | ~> 3.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.20.0 |
+| <a name="provider_local"></a> [local](#provider\_local) | 2.2.3 |
+| <a name="provider_null"></a> [null](#provider\_null) | 3.1.1 |
+| <a name="provider_template"></a> [template](#provider\_template) | 2.2.0 |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | 3.4.0 |
 
 ## Modules
 
@@ -38,7 +38,8 @@ No modules.
 | [local_sensitive_file.ca_cert](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
 | [local_sensitive_file.client_cert](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
 | [local_sensitive_file.client_key](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/sensitive_file) | resource |
-| [null_resource.client_config](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [null_resource.client_config_amd64](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [null_resource.client_config_arm64](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [tls_cert_request.client](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/cert_request) | resource |
 | [tls_cert_request.server](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/cert_request) | resource |
 | [tls_locally_signed_cert.client](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/locally_signed_cert) | resource |
@@ -56,6 +57,8 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_az"></a> [az](#input\_az) | The multiarch builder instances availability zone | `any` | `null` | no |
+| <a name="input_create_amd64"></a> [create\_amd64](#input\_create\_amd64) | Whether to create amd64 builder instance | `bool` | `true` | no |
+| <a name="input_create_arm64"></a> [create\_arm64](#input\_create\_arm64) | Whether to create arm64 builder instance | `bool` | `true` | no |
 | <a name="input_create_client_certs"></a> [create\_client\_certs](#input\_create\_client\_certs) | Whether client certificate files are created | `bool` | `false` | no |
 | <a name="input_docker_cert_path"></a> [docker\_cert\_path](#input\_docker\_cert\_path) | Location for storing generated client docker certificates | `string` | `"~/.docker"` | no |
 | <a name="input_handle_client_config"></a> [handle\_client\_config](#input\_handle\_client\_config) | Whether client buildx config is created and removed | `bool` | `false` | no |
@@ -75,5 +78,8 @@ No modules.
 |------|-------------|
 | <a name="output_ca_cert"></a> [ca\_cert](#output\_ca\_cert) | This CA certificate |
 | <a name="output_client_cert"></a> [client\_cert](#output\_client\_cert) | The client certificate sign by this CA |
-| <a name="output_client_config_cmd"></a> [client\_config\_cmd](#output\_client\_config\_cmd) | Command to configure the client (docker and buildx) |
+| <a name="output_client_config_amd64_cmd"></a> [client\_config\_amd64\_cmd](#output\_client\_config\_amd64\_cmd) | Command to configure the client (docker and buildx) with amd64 instance |
+| <a name="output_client_config_arm64_cmd"></a> [client\_config\_arm64\_cmd](#output\_client\_config\_arm64\_cmd) | Command to configure the client (docker and buildx) with arm64 instance |
 | <a name="output_client_key"></a> [client\_key](#output\_client\_key) | The client private key |
+| <a name="output_docker_host_amd64"></a> [docker\_host\_amd64](#output\_docker\_host\_amd64) | Docker host (TLS) for amd64 instance |
+| <a name="output_docker_host_arm64"></a> [docker\_host\_arm64](#output\_docker\_host\_arm64) | Docker host (TLS) for arm64 instance |
