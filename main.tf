@@ -171,7 +171,8 @@ resource "null_resource" "client_config_amd64" {
     docker context use default || echo "ignoring error..."; \
     docker context rm multiarch-builder-amd64 || echo "ignoring error..."; \
     docker buildx use default || echo "ignoring error..."; \
-    docker buildx rm --all-inactive || echo "ignoring error..."
+    docker buildx rm multiarch-builder-amd64 || echo "ignoring error..."
+    docker buildx rm --all-inactive -f || echo "ignoring error..."
     EOT
     interpreter = ["/bin/bash", "-c"]
     when        = destroy
@@ -189,10 +190,11 @@ resource "null_resource" "client_config_arm64" {
 
   provisioner "local-exec" {
     command     = <<-EOT
-    docker context use default || echo "ignoring error..."; \
-    docker context rm multiarch-builder-arm64 || echo "ignoring error..."; \
-    docker buildx use default || echo "ignoring error..."; \
-    docker buildx rm --all-inactive || echo "ignoring error..."
+    docker context use default || echo "ignoring error..."
+    docker context rm multiarch-builder-arm64 || echo "ignoring error..."
+    docker buildx use default || echo "ignoring error..."
+    docker buildx rm multiarch-builder-arm64 || echo "ignoring error..."
+    docker buildx rm --all-inactive -f || echo "ignoring error..."
     EOT
     interpreter = ["/bin/bash", "-c"]
     when        = destroy

@@ -6,10 +6,14 @@ locals {
     export DOCKER_TLS_VERIFY=1
     export DOCKER_CERT_PATH='${pathexpand(var.docker_cert_path)}'
     # cleanup first
-    docker context use default || echo "ignoring error..."; \
-    docker context rm multiarch-builder-amd64 || echo "ignoring error..."; \
-    docker buildx use default || echo "ignoring error..."; \
-    docker buildx rm --all-inactive || echo "ignoring error..."
+    docker context use default || echo "ignoring error..."
+    docker context rm multiarch-builder-amd64 || echo "ignoring error..."
+    %{if var.create_arm64~}
+    docker context rm multiarch-builder-arm64 || echo "ignoring error..."
+    %{endif~}
+    docker buildx use default || echo "ignoring error..."
+    docker buildx rm multiarch-builder || echo "ignoring error..."
+    docker buildx rm --all-inactive -f || echo "ignoring error..."
     # config
     %{if var.create_amd64~}
     echo "about to set up client config for amd64 instance..."
@@ -42,10 +46,14 @@ locals {
     export DOCKER_TLS_VERIFY=1
     export DOCKER_CERT_PATH='${pathexpand(var.docker_cert_path)}'
     # cleanup first
-    docker context use default || echo "ignoring error..."; \
-    docker context rm multiarch-builder-arm64 || echo "ignoring error..."; \
-    docker buildx use default || echo "ignoring error..."; \
-    docker buildx rm --all-inactive || echo "ignoring error..."
+    docker context use default || echo "ignoring error..."
+    docker context rm multiarch-builder-arm64 || echo "ignoring error..."
+    %{if var.create_amd64~}
+    docker context rm multiarch-builder-amd64 || echo "ignoring error..."
+    %{endif~}
+    docker buildx use default || echo "ignoring error..."
+    docker buildx rm multiarch-builder || echo "ignoring error..."
+    docker buildx rm --all-inactive -f || echo "ignoring error..."
     # config
     %{if var.create_arm64~}
     echo "about to set up client config for arm64 instance..."

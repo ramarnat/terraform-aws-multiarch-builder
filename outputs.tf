@@ -28,10 +28,10 @@ output "client_config_arm64_cmd" {
 
 output "docker_host_amd64" {
   description = "Docker host (TLS) for amd64 instance"
-  value       = "tcp://${aws_spot_instance_request.multiarch_builder_amd64[0].public_dns}:2376"
+  value       = try("tcp://${aws_spot_instance_request.multiarch_builder_amd64[0].public_dns}:2376", "")
 }
 
 output "docker_host_arm64" {
   description = "Docker host (TLS) for arm64 instance"
-  value       = "tcp://${aws_spot_instance_request.multiarch_builder_arm64[0].public_dns}:2376"
+  value       = try("tcp://${aws_spot_instance_request.multiarch_builder_arm64[0].public_dns}:2376", "")
 }
