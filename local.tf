@@ -31,11 +31,8 @@ locals {
         --node=multiarch-builder-amd64 \
         multiarch-builder-amd64
     docker buildx use multiarch-builder
-    ## force init multiarch-builder amd64 instance
-    echo "force init 'multiarch-builder' instance..."
-    echo -e "FROM scratch\nCOPY Dockerfile.init-amd64-builder Dockerfile.init-amd64-builder" > Dockerfile.init-amd64-builder
-    docker buildx build --platform="linux/amd64" -f Dockerfile.init-amd64-builder .
-    rm Dockerfile.init-amd64-builder
+    ## force init multiarch-builder instance, inspecting it
+    docker buildx inspect --bootstrap multiarch-builder
   EOT
   , "")
   client_config_arm64_cmd = try(<<-EOT
@@ -70,11 +67,8 @@ locals {
         --node=multiarch-builder-arm64 \
         multiarch-builder-arm64
     docker buildx use multiarch-builder
-    ## force init multiarch-builder arm64 instance
-    echo "force init 'multiarch-builder' instance..."
-    echo -e "FROM scratch\nCOPY Dockerfile.init-arm64-builder Dockerfile.init-arm64-builder" > Dockerfile.init-arm64-builder
-    docker buildx build --platform="linux/arm64" -f Dockerfile.init-arm64-builder .
-    rm Dockerfile.init-arm64-builder
+    ## force init multiarch-builder instance, inspecting it
+    docker buildx inspect --bootstrap multiarch-builder
   EOT
   , "")
 }
