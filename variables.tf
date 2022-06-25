@@ -1,3 +1,13 @@
+variable "create_amd64" {
+  description = "Whether to create amd64 builder instance"
+  default     = true
+}
+
+variable "create_arm64" {
+  description = "Whether to create arm64 builder instance"
+  default     = true
+}
+
 variable "instance_type_amd64" {
   description = "The amd64 builder instance type"
   default     = "t3.medium"

@@ -98,6 +98,8 @@ data "aws_ami" "amazon_linux_arm64" {
 }
 
 resource "aws_spot_instance_request" "multiarch_builder_amd64" {
+  count = var.create_amd64 ? 1 : 0
+
   ami                         = data.aws_ami.amazon_linux_amd64.id
   instance_type               = var.instance_type_amd64
   availability_zone           = var.az
@@ -126,6 +128,8 @@ resource "aws_spot_instance_request" "multiarch_builder_amd64" {
 }
 
 resource "aws_spot_instance_request" "multiarch_builder_arm64" {
+  count = var.create_arm64 ? 1 : 0
+
   ami                         = data.aws_ami.amazon_linux_arm64.id
   instance_type               = var.instance_type_arm64
   availability_zone           = var.az
