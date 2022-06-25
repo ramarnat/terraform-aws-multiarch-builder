@@ -1,5 +1,5 @@
 locals {
-  client_config_amd64_cmd = <<-EOT
+  client_config_amd64_cmd = try(<<-EOT
     set -eu
     # vars
     unset DOCKER_HOST
@@ -24,20 +24,22 @@ locals {
     echo "about to set up docker context 'multiarch-builder-amd64'..."
     docker context use multiarch-builder-amd64
     timeout 120 bash -c "until docker info &>/dev/null; do sleep 1; echo 'waiting for multiarch-builder-amd64 connection...'; done" || { echo "timeout waiting for remote"; exit 1; }
-    ## set buildx builder instances
+    ## set buildx builder amd64 instance
     echo "about to set up buildx node 'multiarch-builder-amd64'..."
-    docker buildx create --use --name multiarch-builder \
+    docker buildx create --append --name multiarch-builder \
         --driver docker-container \
         --platform linux/amd64 \
         --node=multiarch-builder-amd64 \
         multiarch-builder-amd64
-    ## force init multiarch-builder instances
+    docker buildx use multiarch-builder
+    ## force init multiarch-builder amd64 instance
     echo "force init 'multiarch-builder' instance..."
-    echo -e "FROM scratch\nCOPY Dockerfile.init-multiarch-builder Dockerfile.init-multiarch-builder" > Dockerfile.init-multiarch-builder
-    docker buildx build --platform="linux/amd64" -f Dockerfile.init-multiarch-builder .
-    rm Dockerfile.init-multiarch-builder
+    echo -e "FROM scratch\nCOPY Dockerfile.init-amd64-builder Dockerfile.init-amd64-builder" > Dockerfile.init-amd64-builder
+    docker buildx build --platform="linux/amd64" -f Dockerfile.init-amd64-builder .
+    rm Dockerfile.init-amd64-builder
   EOT
-  client_config_arm64_cmd = <<-EOT
+  , "")
+  client_config_arm64_cmd = try(<<-EOT
     set -eu
     # vars
     unset DOCKER_HOST
@@ -62,21 +64,19 @@ locals {
     echo "about to set up docker context 'multiarch-builder-arm64'..."
     docker context use multiarch-builder-arm64
     timeout 120 bash -c "until docker info &>/dev/null; do sleep 1; echo 'waiting for multiarch-builder-arm64 connection...'; done" || { echo "timeout waiting for remote"; exit 1; }
-    ## set buildx builder instances
+    ## set buildx builder arm64 instance
     echo "about to set up buildx node 'multiarch-builder-arm64'..."
-    %{if var.create_amd64~}
     docker buildx create --append --name multiarch-builder \
-    %{else~}
-    docker buildx create --use --name multiarch-builder \
-    %{endif~}
         --driver docker-container \
         --platform linux/arm64 \
         --node=multiarch-builder-arm64 \
         multiarch-builder-arm64
-    ## force init multiarch-builder instances
+    docker buildx use multiarch-builder
+    ## force init multiarch-builder arm64 instance
     echo "force init 'multiarch-builder' instance..."
-    echo -e "FROM scratch\nCOPY Dockerfile.init-multiarch-builder Dockerfile.init-multiarch-builder" > Dockerfile.init-multiarch-builder
-    docker buildx build --platform="linux/arm64" -f Dockerfile.init-multiarch-builder .
-    rm Dockerfile.init-multiarch-builder
+    echo -e "FROM scratch\nCOPY Dockerfile.init-arm64-builder Dockerfile.init-arm64-builder" > Dockerfile.init-arm64-builder
+    docker buildx build --platform="linux/arm64" -f Dockerfile.init-arm64-builder .
+    rm Dockerfile.init-arm64-builder
   EOT
+  , "")
 }
