@@ -158,6 +158,8 @@ resource "aws_spot_instance_request" "multiarch_builder_arm64" {
 }
 
 resource "null_resource" "client_config_amd64" {
+  depends_on = [aws_spot_instance_request.multiarch_builder_amd64]
+
   count = var.handle_client_config && var.create_amd64 && !var.create_arm64 ? 1 : 0
 
   provisioner "local-exec" {
@@ -179,6 +181,8 @@ resource "null_resource" "client_config_amd64" {
 }
 
 resource "null_resource" "client_config_arm64" {
+  depends_on = [aws_spot_instance_request.multiarch_builder_arm64]
+
   count = var.handle_client_config && var.create_arm64 && !var.create_amd64 ? 1 : 0
 
   provisioner "local-exec" {
@@ -200,6 +204,8 @@ resource "null_resource" "client_config_arm64" {
 }
 
 resource "null_resource" "client_config" {
+  depends_on = [aws_spot_instance_request.multiarch_builder_amd64, aws_spot_instance_request.multiarch_builder_arm64]
+
   count = var.handle_client_config && var.create_amd64 && var.create_arm64 ? 1 : 0
 
   provisioner "local-exec" {
@@ -220,7 +226,8 @@ resource "null_resource" "client_config" {
     docker context rm multiarch-builder-amd64 || echo "ignoring error..."
     docker context rm multiarch-builder-arm64 || echo "ignoring error..."
     docker buildx use default || echo "ignoring error..."
-    docker buildx rm multiarch-builder || echo "ignoring error..."
+    docker buildx create --leave --name multiarch-builder --node multiarch-builder-arm64 || echo "ignoring error..."
+    docker buildx create --leave --name multiarch-builder --node multiarch-builder-amd64 || echo "ignoring error..."
     EOT
     interpreter = ["/bin/bash", "-c"]
     when        = destroy
