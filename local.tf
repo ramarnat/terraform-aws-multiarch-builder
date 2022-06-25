@@ -1,17 +1,15 @@
 locals {
-  client_config_cmd = <<-EOT
+  client_config_amd64_cmd = <<-EOT
     set -eu
     # vars
     unset DOCKER_HOST
     export DOCKER_TLS_VERIFY=1
     export DOCKER_CERT_PATH='${pathexpand(var.docker_cert_path)}'
     # cleanup first
-    echo "about to clean up client config..."
-    docker context use default || echo "ignoring error..."
-    docker context rm multiarch-builder-amd64 || echo "ignoring error..."
-    docker context rm multiarch-builder-arm64 || echo "ignoring error..."
-    docker buildx use default || echo "ignoring error..."
-    docker buildx rm multiarch-builder || echo "ignoring error..."
+    docker context use default || echo "ignoring error..."; \
+    docker context rm multiarch-builder-amd64 || echo "ignoring error..."; \
+    docker buildx use default || echo "ignoring error..."; \
+    docker buildx rm --all-inactive || echo "ignoring error..."
     # config
     %{if var.create_amd64~}
     echo "about to set up client config for amd64 instance..."
@@ -31,6 +29,24 @@ locals {
         --node=multiarch-builder-amd64 \
         multiarch-builder-amd64
     %{endif~}
+    ## force init multiarch-builder instances
+    echo "force init 'multiarch-builder' instance..."
+    echo -e "FROM scratch\nCOPY Dockerfile.init-multiarch-builder Dockerfile.init-multiarch-builder" > Dockerfile.init-multiarch-builder
+    docker buildx build --platform="linux/amd64" -f Dockerfile.init-multiarch-builder .
+    rm Dockerfile.init-multiarch-builder
+  EOT
+  client_config_arm64_cmd = <<-EOT
+    set -eu
+    # vars
+    unset DOCKER_HOST
+    export DOCKER_TLS_VERIFY=1
+    export DOCKER_CERT_PATH='${pathexpand(var.docker_cert_path)}'
+    # cleanup first
+    docker context use default || echo "ignoring error..."; \
+    docker context rm multiarch-builder-arm64 || echo "ignoring error..."; \
+    docker buildx use default || echo "ignoring error..."; \
+    docker buildx rm --all-inactive || echo "ignoring error..."
+    # config
     %{if var.create_arm64~}
     echo "about to set up client config for arm64 instance..."
     docker context create \
@@ -56,14 +72,7 @@ locals {
     ## force init multiarch-builder instances
     echo "force init 'multiarch-builder' instance..."
     echo -e "FROM scratch\nCOPY Dockerfile.init-multiarch-builder Dockerfile.init-multiarch-builder" > Dockerfile.init-multiarch-builder
-    docker buildx build . \
-    %{if var.create_amd64~}
-        --platform="linux/amd64"  \
-    %{endif~}
-    %{if var.create_arm64~}
-        --platform="linux/arm64"  \
-    %{endif~}
-        -f Dockerfile.init-multiarch-builder
+    docker buildx build --platform="linux/arm64" -f Dockerfile.init-multiarch-builder .
     rm Dockerfile.init-multiarch-builder
   EOT
 }

@@ -157,11 +157,11 @@ resource "aws_spot_instance_request" "multiarch_builder_arm64" {
   }
 }
 
-resource "null_resource" "client_config" {
-  count = var.handle_client_config ? 1 : 0
+resource "null_resource" "client_config_amd64" {
+  count = var.handle_client_config && var.create_amd64 ? 1 : 0
 
   provisioner "local-exec" {
-    command     = local.client_config_cmd
+    command     = local.client_config_amd64_cmd
     interpreter = ["/bin/bash", "-c"]
     when        = create
   }
@@ -170,9 +170,29 @@ resource "null_resource" "client_config" {
     command     = <<-EOT
     docker context use default || echo "ignoring error..."; \
     docker context rm multiarch-builder-amd64 || echo "ignoring error..."; \
+    docker buildx use default || echo "ignoring error..."; \
+    docker buildx rm --all-inactive || echo "ignoring error..."
+    EOT
+    interpreter = ["/bin/bash", "-c"]
+    when        = destroy
+  }
+}
+
+resource "null_resource" "client_config_arm64" {
+  count = var.handle_client_config && var.create_arm64 ? 1 : 0
+
+  provisioner "local-exec" {
+    command     = local.client_config_arm64_cmd
+    interpreter = ["/bin/bash", "-c"]
+    when        = create
+  }
+
+  provisioner "local-exec" {
+    command     = <<-EOT
+    docker context use default || echo "ignoring error..."; \
     docker context rm multiarch-builder-arm64 || echo "ignoring error..."; \
     docker buildx use default || echo "ignoring error..."; \
-    docker buildx rm multiarch-builder || echo "ignoring error..."
+    docker buildx rm --all-inactive || echo "ignoring error..."
     EOT
     interpreter = ["/bin/bash", "-c"]
     when        = destroy
