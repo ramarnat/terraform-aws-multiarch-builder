@@ -8,14 +8,13 @@ locals {
     # cleanup first
     docker context use default || echo "ignoring error..."
     docker context rm multiarch-builder-amd64 || echo "ignoring error..."
-    %{if var.create_arm64~}
+    %{if !var.create_arm64~}
     docker context rm multiarch-builder-arm64 || echo "ignoring error..."
     %{endif~}
     docker buildx use default || echo "ignoring error..."
     docker buildx rm multiarch-builder || echo "ignoring error..."
     docker buildx rm --all-inactive -f || echo "ignoring error..."
     # config
-    %{if var.create_amd64~}
     echo "about to set up client config for amd64 instance..."
     docker context create \
         --docker host=tcp://${aws_spot_instance_request.multiarch_builder_amd64[0].public_dns}:2376,ca="${pathexpand(var.docker_cert_path)}/ca.pem",cert="${pathexpand(var.docker_cert_path)}/cert.pem",key="${pathexpand(var.docker_cert_path)}/key.pem" \
@@ -32,7 +31,6 @@ locals {
         --platform linux/amd64 \
         --node=multiarch-builder-amd64 \
         multiarch-builder-amd64
-    %{endif~}
     ## force init multiarch-builder instances
     echo "force init 'multiarch-builder' instance..."
     echo -e "FROM scratch\nCOPY Dockerfile.init-multiarch-builder Dockerfile.init-multiarch-builder" > Dockerfile.init-multiarch-builder
@@ -48,14 +46,13 @@ locals {
     # cleanup first
     docker context use default || echo "ignoring error..."
     docker context rm multiarch-builder-arm64 || echo "ignoring error..."
-    %{if var.create_amd64~}
+    %{if !var.create_amd64~}
     docker context rm multiarch-builder-amd64 || echo "ignoring error..."
     %{endif~}
     docker buildx use default || echo "ignoring error..."
     docker buildx rm multiarch-builder || echo "ignoring error..."
     docker buildx rm --all-inactive -f || echo "ignoring error..."
     # config
-    %{if var.create_arm64~}
     echo "about to set up client config for arm64 instance..."
     docker context create \
         --docker host=tcp://${aws_spot_instance_request.multiarch_builder_arm64[0].public_dns}:2376,ca="${pathexpand(var.docker_cert_path)}/ca.pem",cert="${pathexpand(var.docker_cert_path)}/cert.pem",key="${pathexpand(var.docker_cert_path)}/key.pem" \
@@ -76,7 +73,6 @@ locals {
         --platform linux/arm64 \
         --node=multiarch-builder-arm64 \
         multiarch-builder-arm64
-    %{endif~}
     ## force init multiarch-builder instances
     echo "force init 'multiarch-builder' instance..."
     echo -e "FROM scratch\nCOPY Dockerfile.init-multiarch-builder Dockerfile.init-multiarch-builder" > Dockerfile.init-multiarch-builder
