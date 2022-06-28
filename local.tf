@@ -25,14 +25,11 @@ locals {
     timeout 120 bash -c "until docker info &>/dev/null; do sleep 1; echo 'waiting for multiarch-builder-amd64 connection...'; done" || { echo "timeout waiting for remote"; exit 1; }
     ## set buildx builder amd64 instance
     echo "about to set up buildx node 'multiarch-builder-amd64'..."
-    docker buildx create --append --name multiarch-builder \
+    docker buildx create --use --bootstrap --append --name multiarch-builder \
         --driver docker-container \
         --platform linux/amd64 \
         --node=multiarch-builder-amd64 \
         multiarch-builder-amd64
-    docker buildx use multiarch-builder
-    ## force init multiarch-builder instance, inspecting it
-    docker buildx inspect --bootstrap multiarch-builder
   EOT
   , "")
   client_config_arm64_cmd = try(<<-EOT
@@ -61,14 +58,11 @@ locals {
     timeout 120 bash -c "until docker info &>/dev/null; do sleep 1; echo 'waiting for multiarch-builder-arm64 connection...'; done" || { echo "timeout waiting for remote"; exit 1; }
     ## set buildx builder arm64 instance
     echo "about to set up buildx node 'multiarch-builder-arm64'..."
-    docker buildx create --append --name multiarch-builder \
+    docker buildx create --use --bootstrap --append --name multiarch-builder \
         --driver docker-container \
         --platform linux/arm64 \
         --node=multiarch-builder-arm64 \
         multiarch-builder-arm64
-    docker buildx use multiarch-builder
-    ## force init multiarch-builder instance, inspecting it
-    docker buildx inspect --bootstrap multiarch-builder
   EOT
   , "")
 }
