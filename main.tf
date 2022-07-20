@@ -208,11 +208,6 @@ resource "null_resource" "client_config" {
 
   count = var.handle_client_config && var.create_amd64 && var.create_arm64 ? 1 : 0
 
-
-  triggers = {
-    config_file_exists = fileexists(pathexpand("~/.docker/buildx/instances/multiarch-builder"))
-  }
-
   provisioner "local-exec" {
     command     = local.client_config_arm64_cmd
     interpreter = ["/bin/bash", "-c"]
