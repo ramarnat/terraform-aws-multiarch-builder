@@ -1,4 +1,4 @@
-data "template_cloudinit_config" "multiarch_builder" {
+data "cloudinit_config" "multiarch_builder" {
   gzip          = true
   base64_encode = true
 
@@ -106,7 +106,7 @@ resource "aws_spot_instance_request" "multiarch_builder_amd64" {
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = var.security_group_ids
   key_name                    = var.key_name
-  user_data_base64            = data.template_cloudinit_config.multiarch_builder.rendered
+  user_data_base64            = data.cloudinit_config.multiarch_builder.rendered
   user_data_replace_on_change = true
   wait_for_fulfillment        = true
   associate_public_ip_address = true
@@ -136,7 +136,7 @@ resource "aws_spot_instance_request" "multiarch_builder_arm64" {
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = var.security_group_ids
   key_name                    = var.key_name
-  user_data_base64            = data.template_cloudinit_config.multiarch_builder.rendered
+  user_data_base64            = data.cloudinit_config.multiarch_builder.rendered
   user_data_replace_on_change = true
   wait_for_fulfillment        = true
   associate_public_ip_address = true
