@@ -16,7 +16,11 @@ locals {
     # config
     echo "about to set up client config for amd64 instance..."
     docker context create \
+        %{if can(aws_route53_record.aws-multiarch-builder-amd64[0])~}
+        --docker host=tcp://${aws_route53_record.aws-multiarch-builder-amd64[0].fqdn}:2376,ca="${pathexpand(var.docker_cert_path)}/ca.pem",cert="${pathexpand(var.docker_cert_path)}/cert.pem",key="${pathexpand(var.docker_cert_path)}/key.pem" \
+        %{else~}
         --docker host=tcp://${aws_spot_instance_request.multiarch_builder_amd64[0].public_dns}:2376,ca="${pathexpand(var.docker_cert_path)}/ca.pem",cert="${pathexpand(var.docker_cert_path)}/cert.pem",key="${pathexpand(var.docker_cert_path)}/key.pem" \
+        %{endif~}
         --description "Remote amd64 builder for multiarch-builder instance" \
         multiarch-builder-amd64
     ## use context and wait for initial startup
@@ -49,7 +53,11 @@ locals {
     # config
     echo "about to set up client config for arm64 instance..."
     docker context create \
+        %{if can(aws_route53_record.aws-multiarch-builder-arm64[0])~}
+        --docker host=tcp://${aws_route53_record.aws-multiarch-builder-arm64[0].fqdn}:2376,ca="${pathexpand(var.docker_cert_path)}/ca.pem",cert="${pathexpand(var.docker_cert_path)}/cert.pem",key="${pathexpand(var.docker_cert_path)}/key.pem" \
+        %{else~}
         --docker host=tcp://${aws_spot_instance_request.multiarch_builder_arm64[0].public_dns}:2376,ca="${pathexpand(var.docker_cert_path)}/ca.pem",cert="${pathexpand(var.docker_cert_path)}/cert.pem",key="${pathexpand(var.docker_cert_path)}/key.pem" \
+        %{endif~}
         --description "Remote arm64 builder for multiarch-builder instance" \
         multiarch-builder-arm64
     ## use context and wait for initial startup

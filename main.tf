@@ -97,6 +97,11 @@ data "aws_ami" "amazon_linux_arm64" {
   }
 }
 
+data "aws_route53_zone" "selected" {
+  zone_id      = var.hosted_zone_id
+  private_zone = true
+}
+
 resource "aws_spot_instance_request" "multiarch_builder_amd64" {
   count = var.create_amd64 ? 1 : 0
 
@@ -234,4 +239,24 @@ resource "null_resource" "client_config" {
     interpreter = ["/bin/bash", "-c"]
     when        = destroy
   }
+}
+
+resource "aws_route53_record" "aws-multiarch-builder-amd64" {
+  count = var.create_amd64 && can(var.hosted_zone_id) ? 1 : 0
+
+  zone_id = var.hosted_zone_id
+  name    = "${var.prefix_name}-amd64${var.suffix_name}"
+  type    = "A"
+  records = [aws_spot_instance_request.multiarch_builder_amd64[0].private_ip]
+  ttl     = "60"
+}
+
+resource "aws_route53_record" "aws-multiarch-builder-arm64" {
+  count = var.create_arm64 && can(var.hosted_zone_id) ? 1 : 0
+
+  zone_id = var.hosted_zone_id
+  name    = "${var.prefix_name}-arm64${var.suffix_name}"
+  type    = "A"
+  records = [aws_spot_instance_request.multiarch_builder_arm64[0].private_ip]
+  ttl     = "60"
 }

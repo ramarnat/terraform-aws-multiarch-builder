@@ -47,6 +47,12 @@ variable "suffix_name" {
   default     = ""
 }
 
+variable "hosted_zone_id" {
+  description = "The Route53 Zone to use for certificate SANs"
+  type        = string
+  default     = null
+}
+
 variable "security_group_ids" {
   description = "The multiarch builder instances security group ids list"
   type        = list(string)
