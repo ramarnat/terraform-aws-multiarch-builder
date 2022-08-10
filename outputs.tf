@@ -35,3 +35,8 @@ output "docker_host_arm64" {
   description = "Docker host (TLS) for arm64 instance"
   value       = try("tcp://${aws_spot_instance_request.multiarch_builder_arm64[0].public_dns}:2376", "")
 }
+
+output "spot_instances" {
+  description = "Command to configure the client (docker and buildx) with arm64 instance"
+  value       = [aws_spot_instance_request.multiarch_builder_amd64[0].spot_instance_id, aws_spot_instance_request.multiarch_builder_arm64[0].spot_instance_id]
+}
