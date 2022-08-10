@@ -23,6 +23,14 @@ variable "volume_root_size" {
   default     = 15
 }
 
+variable "amd64_spot_price" {
+  default = null
+}
+
+variable "arm64_spot_price" {
+  default = null
+}
+
 variable "az" {
   description = "The multiarch builder instances availability zone"
   default     = null
@@ -31,6 +39,18 @@ variable "az" {
 variable "prefix_name" {
   description = "The multiarch builder instances prefix name"
   default     = "multiarch-builder"
+}
+
+variable "suffix_name" {
+  description = "Added as suffix to name of the server - e.g. arm64-buildx-<server>. , Also used for the Route53 NS, buildx-arm64-<server.foo.com>"
+  type        = string
+  default     = ""
+}
+
+variable "hosted_zone_id" {
+  description = "The Route53 Zone to use for certificate SANs"
+  type        = string
+  default     = null
 }
 
 variable "security_group_ids" {

@@ -1,4 +1,4 @@
-data "template_cloudinit_config" "multiarch_builder" {
+data "cloudinit_config" "multiarch_builder" {
   gzip          = true
   base64_encode = true
 
@@ -97,6 +97,11 @@ data "aws_ami" "amazon_linux_arm64" {
   }
 }
 
+data "aws_route53_zone" "selected" {
+  zone_id      = var.hosted_zone_id
+  private_zone = true
+}
+
 resource "aws_spot_instance_request" "multiarch_builder_amd64" {
   count = var.create_amd64 ? 1 : 0
 
@@ -106,10 +111,11 @@ resource "aws_spot_instance_request" "multiarch_builder_amd64" {
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = var.security_group_ids
   key_name                    = var.key_name
-  user_data_base64            = data.template_cloudinit_config.multiarch_builder.rendered
+  user_data_base64            = data.cloudinit_config.multiarch_builder.rendered
   user_data_replace_on_change = true
   wait_for_fulfillment        = true
   associate_public_ip_address = true
+  spot_price                  = var.amd64_spot_price
 
   instance_interruption_behavior = "terminate"
   spot_type                      = "one-time"
@@ -122,7 +128,7 @@ resource "aws_spot_instance_request" "multiarch_builder_amd64" {
   iam_instance_profile = var.iam_instance_profile
 
   tags = {
-    Name            = "${var.prefix_name}-amd64"
+    Name            = "${var.prefix_name}-amd64${var.suffix_name}"
     TerraformModule = "multiarch-builder"
   }
 }
@@ -136,10 +142,11 @@ resource "aws_spot_instance_request" "multiarch_builder_arm64" {
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = var.security_group_ids
   key_name                    = var.key_name
-  user_data_base64            = data.template_cloudinit_config.multiarch_builder.rendered
+  user_data_base64            = data.cloudinit_config.multiarch_builder.rendered
   user_data_replace_on_change = true
   wait_for_fulfillment        = true
   associate_public_ip_address = true
+  spot_price                  = var.arm64_spot_price
 
   instance_interruption_behavior = "terminate"
   spot_type                      = "one-time"
@@ -232,4 +239,24 @@ resource "null_resource" "client_config" {
     interpreter = ["/bin/bash", "-c"]
     when        = destroy
   }
+}
+
+resource "aws_route53_record" "aws-multiarch-builder-amd64" {
+  count = var.create_amd64 && can(var.hosted_zone_id) ? 1 : 0
+
+  zone_id = var.hosted_zone_id
+  name    = "${var.prefix_name}-amd64${var.suffix_name}"
+  type    = "A"
+  records = [aws_spot_instance_request.multiarch_builder_amd64[0].private_ip]
+  ttl     = "60"
+}
+
+resource "aws_route53_record" "aws-multiarch-builder-arm64" {
+  count = var.create_arm64 && can(var.hosted_zone_id) ? 1 : 0
+
+  zone_id = var.hosted_zone_id
+  name    = "${var.prefix_name}-arm64${var.suffix_name}"
+  type    = "A"
+  records = [aws_spot_instance_request.multiarch_builder_arm64[0].private_ip]
+  ttl     = "60"
 }

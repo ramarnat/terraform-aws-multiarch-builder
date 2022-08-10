@@ -36,7 +36,7 @@ resource "tls_private_key" "client" {
 resource "tls_cert_request" "server" {
   private_key_pem = tls_private_key.server.private_key_pem
 
-  dns_names = ["*.compute-1.amazonaws.com", "*.*.amazonaws.com"]
+  dns_names = concat(["*.compute-1.amazonaws.com", "*.*.amazonaws.com"], ["*.${data.aws_route53_zone.selected.name}"])
 
   subject {
     common_name  = "${var.prefix_name}-server"
