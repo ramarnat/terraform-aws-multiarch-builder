@@ -128,7 +128,7 @@ resource "aws_spot_instance_request" "multiarch_builder_amd64" {
   iam_instance_profile = var.iam_instance_profile
 
   tags = {
-    Name                = "${var.prefix_name}-amd64${var.suffix_name}"
+    Name            = "${var.prefix_name}-amd64${var.suffix_name}"
     TerraformModule = "multiarch-builder"
   }
 }
