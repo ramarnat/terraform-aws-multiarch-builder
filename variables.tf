@@ -23,6 +23,14 @@ variable "volume_root_size" {
   default     = 15
 }
 
+variable "amd64_spot_price" {
+  default = null
+}
+
+variable "arm64_spot_price" {
+  default = null
+}
+
 variable "az" {
   description = "The multiarch builder instances availability zone"
   default     = null

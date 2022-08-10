@@ -110,6 +110,7 @@ resource "aws_spot_instance_request" "multiarch_builder_amd64" {
   user_data_replace_on_change = true
   wait_for_fulfillment        = true
   associate_public_ip_address = true
+  spot_price                  = var.amd64_spot_price
 
   instance_interruption_behavior = "terminate"
   spot_type                      = "one-time"
@@ -140,6 +141,7 @@ resource "aws_spot_instance_request" "multiarch_builder_arm64" {
   user_data_replace_on_change = true
   wait_for_fulfillment        = true
   associate_public_ip_address = true
+  spot_price                  = var.arm64_spot_price
 
   instance_interruption_behavior = "terminate"
   spot_type                      = "one-time"
