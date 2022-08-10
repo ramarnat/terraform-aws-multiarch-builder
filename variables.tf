@@ -41,6 +41,12 @@ variable "prefix_name" {
   default     = "multiarch-builder"
 }
 
+variable "suffix_name" {
+  description = "Added as suffix to name of the server - e.g. arm64-buildx-<server>. , Also used for the Route53 NS, buildx-arm64-<server.foo.com>"
+  type        = string
+  default     = ""
+}
+
 variable "security_group_ids" {
   description = "The multiarch builder instances security group ids list"
   type        = list(string)
